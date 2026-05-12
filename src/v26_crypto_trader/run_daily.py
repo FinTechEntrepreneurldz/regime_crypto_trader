@@ -1,3 +1,4 @@
+from .features import compute_regime_features
 from __future__ import annotations
 
 import json
@@ -28,6 +29,7 @@ CANONICAL_DIRS = [
     "portfolio",
     "target_weights",
     "health",
+    "diagnostics",
 ]
 
 
@@ -139,8 +141,185 @@ def signal_history_row(signal, target_weights: pd.Series, equity: float, timesta
         row[f"regime_{key}"] = value
     return pd.DataFrame([row])
 
+def build_gate_diagnostics(close: pd.DataFrame, cfg: dict, signal, timestamp: str) -> tuple[pd.DataFrame, dict]:
+    regime = compute_regime_features(close, cfg).sort_index()
+    gate_cfg = cfg.get("gate", {})
+    asof = pd.Timestamp(signal.asof_date)
 
-def health_status(signal, target_weights: pd.Series, planned: pd.DataFrame, submitted: pd.DataFrame, equity: float, timestamp: str) -> dict:
+    if regime.empty:
+        empty = pd.DataFrame(columns=[
+            "timestamp_utc", "market_date", "component", "value", "threshold",
+            "operator", "required", "passed", "status", "description"
+        ])
+        return empty, {
+            "computed_at": timestamp,
+            "market_date": str(asof.date()),
+            "active": bool(signal.active),
+            "failed_conditions": ["regime_features_missing"],
+            "summary": "Regime feature frame is empty.",
+        }
+
+    regime = regime.loc[:asof] if len(regime.loc[:asof]) else regime
+    latest = regime.iloc[-1]
+    market_date = str(pd.Timestamp(regime.index[-1]).date())
+
+    risk_on_score_min = float(gate_cfg.get("risk_on_score_min", 0.65))
+    breadth50_min = float(gate_cfg.get("breadth50_min", 0.55))
+    min_btc_drawdown_63 = float(gate_cfg.get("min_btc_drawdown_63", -0.20))
+    confirmation_days = int(gate_cfg.get("confirmation_days", 1))
+
+    risk_on_score_pass = regime["risk_on_score"] >= risk_on_score_min
+    breadth_pass = regime["breadth_50"] >= breadth50_min
+    drawdown_pass = regime["btc_dd_63"] >= min_btc_drawdown_63
+    btc50_pass = regime["btc_above_50"] > 0.5
+    btc200_pass = regime["btc_above_200"] > 0.5
+    eth50_pass = regime["eth_above_50"] > 0.5
+    btc_ret_pass = regime["btc_ret_21"] > 0
+
+    raw_gate = risk_on_score_pass & breadth_pass & drawdown_pass
+
+    if gate_cfg.get("require_btc_above_50", True):
+        raw_gate &= btc50_pass
+    if gate_cfg.get("require_btc_above_200", True):
+        raw_gate &= btc200_pass
+    if gate_cfg.get("require_eth_above_50", True):
+        raw_gate &= eth50_pass
+    if gate_cfg.get("require_btc_ret_21_positive", True):
+        raw_gate &= btc_ret_pass
+
+    if confirmation_days > 1:
+        confirmation_count = int(raw_gate.tail(confirmation_days).sum())
+        confirmation_pass = confirmation_count >= confirmation_days
+        final_gate = bool(raw_gate.rolling(confirmation_days).sum().iloc[-1] >= confirmation_days)
+    else:
+        confirmation_count = int(bool(raw_gate.iloc[-1]))
+        confirmation_pass = bool(raw_gate.iloc[-1])
+        final_gate = bool(raw_gate.iloc[-1])
+
+    checks = [
+        {
+            "component": "risk_on_score",
+            "value": float(latest.get("risk_on_score", 0.0)),
+            "threshold": risk_on_score_min,
+            "operator": ">=",
+            "required": True,
+            "passed": bool(risk_on_score_pass.iloc[-1]),
+            "description": "Composite crypto risk-on score must be above the configured minimum.",
+        },
+        {
+            "component": "breadth_50",
+            "value": float(latest.get("breadth_50", 0.0)),
+            "threshold": breadth50_min,
+            "operator": ">=",
+            "required": True,
+            "passed": bool(breadth_pass.iloc[-1]),
+            "description": "Universe breadth above the 50-day moving average must be strong enough.",
+        },
+        {
+            "component": "btc_dd_63",
+            "value": float(latest.get("btc_dd_63", 0.0)),
+            "threshold": min_btc_drawdown_63,
+            "operator": ">=",
+            "required": True,
+            "passed": bool(drawdown_pass.iloc[-1]),
+            "description": "BTC 63-day drawdown must not be worse than the configured limit.",
+        },
+        {
+            "component": "btc_above_50",
+            "value": float(latest.get("btc_above_50", 0.0)),
+            "threshold": 0.5,
+            "operator": ">",
+            "required": bool(gate_cfg.get("require_btc_above_50", True)),
+            "passed": (not gate_cfg.get("require_btc_above_50", True)) or bool(btc50_pass.iloc[-1]),
+            "description": "BTC must be above its 50-day moving average when required.",
+        },
+        {
+            "component": "btc_above_200",
+            "value": float(latest.get("btc_above_200", 0.0)),
+            "threshold": 0.5,
+            "operator": ">",
+            "required": bool(gate_cfg.get("require_btc_above_200", True)),
+            "passed": (not gate_cfg.get("require_btc_above_200", True)) or bool(btc200_pass.iloc[-1]),
+            "description": "BTC must be above its 200-day moving average when required.",
+        },
+        {
+            "component": "eth_above_50",
+            "value": float(latest.get("eth_above_50", 0.0)),
+            "threshold": 0.5,
+            "operator": ">",
+            "required": bool(gate_cfg.get("require_eth_above_50", True)),
+            "passed": (not gate_cfg.get("require_eth_above_50", True)) or bool(eth50_pass.iloc[-1]),
+            "description": "ETH must be above its 50-day moving average when required.",
+        },
+        {
+            "component": "btc_ret_21_positive",
+            "value": float(latest.get("btc_ret_21", 0.0)),
+            "threshold": 0.0,
+            "operator": ">",
+            "required": bool(gate_cfg.get("require_btc_ret_21_positive", True)),
+            "passed": (not gate_cfg.get("require_btc_ret_21_positive", True)) or bool(btc_ret_pass.iloc[-1]),
+            "description": "BTC 21-day return must be positive when required.",
+        },
+        {
+            "component": "confirmation_days",
+            "value": confirmation_count,
+            "threshold": confirmation_days,
+            "operator": ">=",
+            "required": True,
+            "passed": bool(confirmation_pass),
+            "description": f"Raw gate must pass for {confirmation_days} consecutive day(s).",
+        },
+        {
+            "component": "final_v26_gate",
+            "value": int(final_gate),
+            "threshold": 1,
+            "operator": "==",
+            "required": True,
+            "passed": bool(signal.active),
+            "description": "Final V26 risk gate after all checks and confirmation-day logic.",
+        },
+    ]
+
+    rows = []
+    for check in checks:
+        rows.append({
+            "timestamp_utc": timestamp,
+            "market_date": market_date,
+            "component": check["component"],
+            "value": check["value"],
+            "threshold": check["threshold"],
+            "operator": check["operator"],
+            "required": check["required"],
+            "passed": check["passed"],
+            "status": "PASS" if check["passed"] else "FAIL",
+            "description": check["description"],
+        })
+
+    failed = [
+        row["component"]
+        for row in rows
+        if row["required"] and not row["passed"]
+    ]
+
+    summary = {
+        "computed_at": timestamp,
+        "market_date": market_date,
+        "active": bool(signal.active),
+        "raw_gate_today": bool(raw_gate.iloc[-1]),
+        "confirmation_days_required": confirmation_days,
+        "confirmation_days_passed_count": confirmation_count,
+        "confirmation_days_pass": bool(confirmation_pass),
+        "failed_conditions": failed,
+        "regime_snapshot": {
+            k: float(v) if isinstance(v, (int, float)) else v
+            for k, v in latest.to_dict().items()
+        },
+        "summary": "V26 gate is ON." if signal.active else f"V26 gate is OFF. Failed checks: {', '.join(failed) if failed else 'unknown'}."
+    }
+
+    return pd.DataFrame(rows), summary
+
+def health_status(signal, target_weights: pd.Series, planned: pd.DataFrame, submitted: pd.DataFrame, equity: float, timestamp: str, gate_summary: dict | None = None) -> dict:
     failed = 0
     if submitted is not None and not submitted.empty and "status" in submitted.columns:
         failed = int(submitted["status"].astype(str).str.lower().str.contains("failed|error").sum())
@@ -149,7 +328,9 @@ def health_status(signal, target_weights: pd.Series, planned: pd.DataFrame, subm
         alerts.append(f"{failed} submitted order rows failed or errored.")
     if not signal.active:
         alerts.append("V26 risk-on gate is false; strategy target is flat.")
-    return {
+    if gate_summary and gate_summary.get("failed_conditions"):
+        alerts.append("Failed V26 gate checks: " + ", ".join(gate_summary["failed_conditions"]))
+        out = {
         "computed_at": timestamp,
         "overall_status": "degraded" if failed > 0 else "ok",
         "alerts": alerts,
@@ -165,8 +346,13 @@ def health_status(signal, target_weights: pd.Series, planned: pd.DataFrame, subm
         "training_recommended": False,
     }
 
+    if gate_summary:
+        out["gate_diagnostics"] = gate_summary
 
-def write_canonical_logs(signal, target_weights: pd.Series, planned_orders: list[Any], submitted: pd.DataFrame, positions: pd.DataFrame, equity: float, cfg: dict, timestamp: str) -> None:
+    return out
+
+
+def write_canonical_logs(signal, target_weights: pd.Series, planned_orders: list[Any], submitted: pd.DataFrame, positions: pd.DataFrame, equity: float, cfg: dict, timestamp: str, close: pd.DataFrame | None = None) -> None:
     ensure_log_dirs()
     submit_orders = execute_orders_enabled(cfg)
     action = "risk_on_long_only" if signal.active else "risk_gate_off_flat"
@@ -176,6 +362,11 @@ def write_canonical_logs(signal, target_weights: pd.Series, planned_orders: list
     submitted_df = submitted_rows(submitted, timestamp)
     positions_df = normalize_positions(positions, timestamp)
     target_df = target_weight_rows(target_weights, timestamp)
+
+    gate_df = pd.DataFrame()
+    gate_summary = None
+    if close is not None:
+        gate_df, gate_summary = build_gate_diagnostics(close, cfg, signal, timestamp)
 
     decision = pd.DataFrame([{
         "market_date": str(signal.asof_date.date()),
@@ -199,9 +390,24 @@ def write_canonical_logs(signal, target_weights: pd.Series, planned_orders: list
     write_latest_and_append(planned_df, LOG_DIR / "orders" / "latest_planned_orders.csv", LOG_DIR / "orders" / "planned_orders.csv")
     write_latest_and_append(submitted_df, LOG_DIR / "orders" / "latest_submitted_orders.csv", LOG_DIR / "orders" / "submitted_orders.csv")
     write_latest_and_append(positions_df, LOG_DIR / "positions" / "latest_positions.csv", LOG_DIR / "positions" / "positions.csv")
+    if not gate_df.empty:
+        write_latest_and_append(
+            gate_df,
+            LOG_DIR / "diagnostics" / "latest_gate_diagnostics.csv",
+            LOG_DIR / "diagnostics" / "gate_diagnostics.csv",
+        )
+        (LOG_DIR / "diagnostics" / "latest_gate_diagnostics.json").write_text(
+            json.dumps(gate_summary, indent=2, sort_keys=True)
+        )
     append_csv(portfolio_row(equity, action, submit_orders, timestamp), LOG_DIR / "portfolio" / "portfolio.csv")
     append_csv(signal_history_row(signal, target_weights, equity, timestamp), LOG_DIR / "health" / "signal_history.csv")
-    (LOG_DIR / "health" / "health_status.json").write_text(json.dumps(health_status(signal, target_weights, planned_df, submitted_df, equity, timestamp), indent=2, sort_keys=True))
+    (LOG_DIR / "health" / "health_status.json").write_text(
+        json.dumps(
+            health_status(signal, target_weights, planned_df, submitted_df, equity, timestamp, gate_summary),
+            indent=2,
+            sort_keys=True,
+        )
+    )
 
 
 def main(config_path="config/frozen_config.yaml"):
@@ -232,7 +438,7 @@ def main(config_path="config/frozen_config.yaml"):
         equity = float(pre_equity or model_notional(cfg))
 
     timestamp = utc_now()
-    write_canonical_logs(signal, target_weights, planned_orders, order_df, post_positions, equity, cfg, timestamp)
+    write_canonical_logs(signal, target_weights, planned_orders, order_df, post_positions, equity, cfg, timestamp, close=close)
 
     # Keep original lightweight performance outputs too.
     perf_df = snapshot_performance(equity, post_positions, {"active": signal.active, "risk_on_score": signal.regime_snapshot.get("risk_on_score")})
