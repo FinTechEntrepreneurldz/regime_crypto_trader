@@ -2,9 +2,34 @@
   "account_value": 1000000.0,
   "active_signal": false,
   "alerts": [
-    "V26 risk-on gate is false; strategy target is flat."
+    "V26 risk-on gate is false; strategy target is flat.",
+    "Failed V26 gate checks: btc_above_200, confirmation_days, final_v26_gate"
   ],
-  "computed_at": "2026-05-12T10:01:28.663755+00:00",
+  "computed_at": "2026-05-12T10:26:38.404659+00:00",
+  "gate_diagnostics": {
+    "active": false,
+    "computed_at": "2026-05-12T10:26:38.404659+00:00",
+    "confirmation_days_pass": false,
+    "confirmation_days_passed_count": 0,
+    "confirmation_days_required": 2,
+    "failed_conditions": [
+      "btc_above_200",
+      "confirmation_days",
+      "final_v26_gate"
+    ],
+    "market_date": "2026-05-12",
+    "raw_gate_today": false,
+    "regime_snapshot": {
+      "breadth_50": 0.9166666666666666,
+      "btc_above_200": 0.0,
+      "btc_above_50": 1.0,
+      "btc_dd_63": -0.018727213497947925,
+      "btc_ret_21": 0.0564613292887175,
+      "eth_above_50": 1.0,
+      "risk_on_score": 0.7591666666666667
+    },
+    "summary": "V26 gate is OFF. Failed checks: btc_above_200, confirmation_days, final_v26_gate."
+  },
   "gross_target_weight": 0.0,
   "model_id": "regime_crypto_trader",
   "model_name": "Regime Crypto Trader \u2014 V26 Long-Only",
