@@ -1,3 +1,4 @@
 timestamp_utc,date,status,active,reason,selected_assets,account_value,n_target_positions,gross_target_weight,regime_btc_above_50,regime_btc_above_200,regime_eth_above_50,regime_breadth_50,regime_btc_ret_21,regime_btc_dd_63,regime_risk_on_score
 2026-05-12T10:01:28.663755+00:00,2026-05-12,ok,False,V26 risk-on gate is false; target is flat/zero new exposure.,,1000000.0,0,0.0,1.0,0.0,1.0,0.9166666666666666,0.058348221302457315,-0.01697461192814187,0.7591666666666667
 2026-05-12T10:26:38.404659+00:00,2026-05-12,ok,False,V26 risk-on gate is false; target is flat/zero new exposure.,,1000000.0,0,0.0,1.0,0.0,1.0,0.9166666666666666,0.0564613292887175,-0.018727213497947925,0.7591666666666667
+2026-05-12T20:04:02.964026+00:00,2026-05-12,ok,False,V26 risk-on gate is false; target is flat/zero new exposure.,,1000000.0,0,0.0,1.0,0.0,1.0,0.8333333333333334,0.05856276523288084,-0.016775337127827306,0.7383333333333334
