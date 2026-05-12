@@ -1,0 +1,17 @@
+{
+  "account_value": 1000000.0,
+  "active_signal": false,
+  "alerts": [
+    "V26 risk-on gate is false; strategy target is flat."
+  ],
+  "computed_at": "2026-05-12T10:01:28.663755+00:00",
+  "gross_target_weight": 0.0,
+  "model_id": "regime_crypto_trader",
+  "model_name": "Regime Crypto Trader \u2014 V26 Long-Only",
+  "n_orders_planned": 0,
+  "n_orders_submitted": 0,
+  "n_target_positions": 0,
+  "overall_status": "ok",
+  "risk_on_score": 0.7591666666666667,
+  "training_recommended": false
+}
