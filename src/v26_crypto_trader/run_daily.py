@@ -7,9 +7,8 @@ from typing import Any
 
 import pandas as pd
 
-from .alpaca_data import bars_to_close_volume, load_crypto_bars_alpaca
-from .broker_alpaca import get_account_info, get_positions, trading_client
 from .execution import execute_orders, plan_orders
+from .features import compute_regime_features
 from .performance import snapshot_performance
 from .risk import apply_risk_limits
 from .settings import execute_orders_enabled, load_config, model_notional
@@ -318,18 +317,40 @@ def build_gate_diagnostics(close: pd.DataFrame, cfg: dict, signal, timestamp: st
 
     return pd.DataFrame(rows), summary
 
-def health_status(signal, target_weights: pd.Series, planned: pd.DataFrame, submitted: pd.DataFrame, equity: float, timestamp: str, gate_summary: dict | None = None) -> dict:
+def health_status(
+    signal,
+    target_weights: pd.Series,
+    planned: pd.DataFrame,
+    submitted: pd.DataFrame,
+    equity: float,
+    timestamp: str,
+    gate_summary: dict | None = None,
+) -> dict:
     failed = 0
+
     if submitted is not None and not submitted.empty and "status" in submitted.columns:
-        failed = int(submitted["status"].astype(str).str.lower().str.contains("failed|error").sum())
+        failed = int(
+            submitted["status"]
+            .astype(str)
+            .str.lower()
+            .str.contains("failed|error")
+            .sum()
+        )
+
     alerts = []
+
     if failed > 0:
         alerts.append(f"{failed} submitted order rows failed or errored.")
+
     if not signal.active:
         alerts.append("V26 risk-on gate is false; strategy target is flat.")
+
     if gate_summary and gate_summary.get("failed_conditions"):
-        alerts.append("Failed V26 gate checks: " + ", ".join(gate_summary["failed_conditions"]))
-        out = {
+        alerts.append(
+            "Failed V26 gate checks: " + ", ".join(gate_summary["failed_conditions"])
+        )
+
+    out = {
         "computed_at": timestamp,
         "overall_status": "degraded" if failed > 0 else "ok",
         "alerts": alerts,
@@ -349,7 +370,6 @@ def health_status(signal, target_weights: pd.Series, planned: pd.DataFrame, subm
         out["gate_diagnostics"] = gate_summary
 
     return out
-
 
 def write_canonical_logs(signal, target_weights: pd.Series, planned_orders: list[Any], submitted: pd.DataFrame, positions: pd.DataFrame, equity: float, cfg: dict, timestamp: str, close: pd.DataFrame | None = None) -> None:
     ensure_log_dirs()
