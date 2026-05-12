@@ -1,0 +1,16 @@
+{
+  "alpaca_crypto_symbols": [
+    "BTC/USD",
+    "ETH/USD",
+    "SOL/USD",
+    "LINK/USD",
+    "AVAX/USD",
+    "DOGE/USD",
+    "LTC/USD",
+    "BCH/USD",
+    "AAVE/USD",
+    "UNI/USD",
+    "XRP/USD",
+    "ADA/USD"
+  ]
+}

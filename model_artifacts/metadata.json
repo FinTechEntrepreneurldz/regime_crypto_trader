@@ -1,0 +1,24 @@
+{
+  "strategy_name": "V26_ALPACA_LONG_ONLY_RISK_ON_CRYPTO_RELVAL",
+  "artifact_version": "1.0.0",
+  "created_utc": "2026-05-12",
+  "model_type": "deterministic_rule_based_strategy",
+  "learned_model": false,
+  "broker_target": "Alpaca Paper Trading API",
+  "execution_mode": "long_only_spot_crypto",
+  "research_reference": {
+    "source_notebook": "v26_risk_on_only_crypto_relval_production_colab.ipynb",
+    "selected_research_variant": "V26_CRYPTO_STOPLOSS_MOMENTUM_VOL_TARGET_riskon_s65_b55_c2_tw0_tm100_vol08",
+    "test_calendar_sharpe": 1.641318,
+    "test_active_day_sharpe": 4.993033,
+    "test_ann_return": 0.061926,
+    "test_max_drawdown": -0.023109,
+    "active_rate_test": 0.112903,
+    "notes": "Research strategy was risk-on-only and flat otherwise. This package adapts it to Alpaca crypto spot by clipping shorts and generating long-only target weights. Backtest metrics from V26 research do not automatically apply to the long-only execution adapter."
+  },
+  "risk_notes": [
+    "Crypto is volatile and paper performance may not match live fills.",
+    "Alpaca crypto spot does not support short selling or margin; this artifact is long-only.",
+    "Run dry-run mode before enabling EXECUTE_PAPER_ORDERS=true."
+  ]
+}

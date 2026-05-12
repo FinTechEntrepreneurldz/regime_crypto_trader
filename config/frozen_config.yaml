@@ -1,0 +1,84 @@
+strategy:
+  name: REGIME_CRYPTO_TRADER_V26_LONG_ONLY
+  version: 1.0.0
+  model_id: regime_crypto_trader
+  model_type: deterministic_regime_gated_long_only_spot_crypto
+  research_source: V26_RISK_ON_ONLY_CRYPTO_RELVAL_PRODUCTION
+  selected_research_variant: V26_CRYPTO_STOPLOSS_MOMENTUM_VOL_TARGET_riskon_s65_b55_c2_tw0_tm100_vol08
+  paper_trading_adapter: alpaca_crypto_spot
+  flat_when_gate_false: true
+  allow_short: false
+  allow_margin: false
+  long_only_reason: Alpaca crypto spot does not support crypto short selling or margin.
+
+alpaca:
+  base_url: https://paper-api.alpaca.markets
+  data_feed: us
+  quote_currency: USD
+  order_time_in_force: gtc
+  execute_paper_orders_env: EXECUTE_PAPER_ORDERS
+
+universe:
+  symbols:
+    - BTC/USD
+    - ETH/USD
+    - SOL/USD
+    - LINK/USD
+    - AVAX/USD
+    - DOGE/USD
+    - LTC/USD
+    - BCH/USD
+    - AAVE/USD
+    - UNI/USD
+    - XRP/USD
+    - ADA/USD
+  min_history_days: 260
+  lookback_days: 430
+
+gate:
+  risk_on_score_min: 0.65
+  breadth50_min: 0.55
+  confirmation_days: 2
+  require_btc_above_50: true
+  require_btc_above_200: true
+  require_eth_above_50: true
+  require_btc_ret_21_positive: true
+  min_btc_drawdown_63: -0.20
+
+features:
+  momentum_windows: [21, 63, 126]
+  volatility_window: 63
+  ma_fast: 50
+  ma_slow: 200
+  stop_drawdown_window: 21
+  stop_drawdown_threshold: -0.12
+
+portfolio:
+  model_notional: 1000000
+  long_n: 6
+  target_vol: 0.08
+  vol_lookback: 63
+  max_gross_exposure: 0.75
+  max_single_asset_weight: 0.20
+  min_target_weight: 0.015
+  cash_buffer: 0.05
+  rebalance_threshold_weight: 0.005
+  partial_rebalance_rate: 1.0
+
+risk:
+  max_account_gross_exposure: 0.75
+  max_single_position_weight: 0.20
+  max_order_notional: 250000
+  min_order_notional: 25
+  max_daily_turnover: 0.75
+  hard_kill_switch_env: STRATEGY_KILL_SWITCH
+  flatten_on_kill_switch: true
+  close_positions_when_gate_false: true
+
+schedule:
+  timezone: UTC
+  suggested_cron: "15 0 * * *"
+  run_after_utc_close_buffer_minutes: 15
+
+logging:
+  log_dir: logs

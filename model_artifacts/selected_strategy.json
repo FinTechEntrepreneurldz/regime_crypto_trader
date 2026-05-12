@@ -1,0 +1,23 @@
+{
+  "model_type": "deterministic_regime_gated_long_only_crypto_strategy",
+  "base_stream": "long_only_stoploss_momentum_voltarget",
+  "gate_family": "v26_strict_risk_on",
+  "gate": {
+    "risk_on_score_min": 0.65,
+    "breadth50_min": 0.55,
+    "confirmation_days": 2,
+    "require_btc_above_50": true,
+    "require_btc_above_200": true,
+    "require_eth_above_50": true,
+    "require_btc_ret_21_positive": true,
+    "min_btc_drawdown_63": -0.2
+  },
+  "portfolio": {
+    "long_n": 6,
+    "target_vol": 0.08,
+    "max_gross_exposure": 0.75,
+    "max_single_asset_weight": 0.2,
+    "flat_when_gate_false": true,
+    "allow_short": false
+  }
+}

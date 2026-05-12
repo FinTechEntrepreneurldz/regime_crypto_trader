@@ -1,0 +1,35 @@
+{
+  "required_bars": [
+    "timestamp",
+    "symbol",
+    "open",
+    "high",
+    "low",
+    "close",
+    "volume"
+  ],
+  "regime_features": [
+    "btc_above_50",
+    "btc_above_200",
+    "eth_above_50",
+    "breadth_50",
+    "btc_ret_21",
+    "btc_dd_63",
+    "risk_on_score"
+  ],
+  "asset_features": [
+    "mom_21",
+    "mom_63",
+    "mom_126",
+    "vol_63",
+    "drawdown_21",
+    "above_50",
+    "stop_ok"
+  ],
+  "target_output": [
+    "symbol",
+    "target_weight",
+    "side",
+    "reason"
+  ]
+}

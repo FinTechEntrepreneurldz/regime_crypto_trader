@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "v26-crypto-trader"
+version = "1.0.0"
+description = "V26 Alpaca long-only crypto paper trading package"
+requires-python = ">=3.10"
+dependencies = [
+  "pandas>=2.1.0",
+  "numpy>=1.26.0",
+  "pyyaml>=6.0.1",
+  "python-dotenv>=1.0.1",
+  "alpaca-py>=0.35.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
