@@ -1,10 +1,10 @@
 timestamp_utc,market_date,component,value,threshold,operator,required,passed,status,description
-2026-05-12T20:06:52.303355+00:00,2026-05-12,risk_on_score,0.7383333333333334,0.65,>=,True,True,PASS,Composite crypto risk-on score must be above the configured minimum.
-2026-05-12T20:06:52.303355+00:00,2026-05-12,breadth_50,0.8333333333333334,0.55,>=,True,True,PASS,Universe breadth above the 50-day moving average must be strong enough.
-2026-05-12T20:06:52.303355+00:00,2026-05-12,btc_dd_63,-0.016767186082881524,-0.2,>=,True,True,PASS,BTC 63-day drawdown must not be worse than the configured limit.
-2026-05-12T20:06:52.303355+00:00,2026-05-12,btc_above_50,1.0,0.5,>,True,True,PASS,BTC must be above its 50-day moving average when required.
-2026-05-12T20:06:52.303355+00:00,2026-05-12,btc_above_200,0.0,0.5,>,True,False,FAIL,BTC must be above its 200-day moving average when required.
-2026-05-12T20:06:52.303355+00:00,2026-05-12,eth_above_50,1.0,0.5,>,True,True,PASS,ETH must be above its 50-day moving average when required.
-2026-05-12T20:06:52.303355+00:00,2026-05-12,btc_ret_21_positive,0.05857154083931482,0.0,>,True,True,PASS,BTC 21-day return must be positive when required.
-2026-05-12T20:06:52.303355+00:00,2026-05-12,confirmation_days,0.0,2.0,>=,True,False,FAIL,Raw gate must pass for 2 consecutive day(s).
-2026-05-12T20:06:52.303355+00:00,2026-05-12,final_v26_gate,0.0,1.0,==,True,False,FAIL,Final V26 risk gate after all checks and confirmation-day logic.
+2026-05-13T04:13:53.425296+00:00,2026-05-13,risk_on_score,0.7591666666666667,0.65,>=,True,True,PASS,Composite crypto risk-on score must be above the configured minimum.
+2026-05-13T04:13:53.425296+00:00,2026-05-13,breadth_50,0.9166666666666666,0.55,>=,True,True,PASS,Universe breadth above the 50-day moving average must be strong enough.
+2026-05-13T04:13:53.425296+00:00,2026-05-13,btc_dd_63,-0.01260728204622874,-0.2,>=,True,True,PASS,BTC 63-day drawdown must not be worse than the configured limit.
+2026-05-13T04:13:53.425296+00:00,2026-05-13,btc_above_50,1.0,0.5,>,True,True,PASS,BTC must be above its 50-day moving average when required.
+2026-05-13T04:13:53.425296+00:00,2026-05-13,btc_above_200,0.0,0.5,>,True,False,FAIL,BTC must be above its 200-day moving average when required.
+2026-05-13T04:13:53.425296+00:00,2026-05-13,eth_above_50,1.0,0.5,>,True,True,PASS,ETH must be above its 50-day moving average when required.
+2026-05-13T04:13:53.425296+00:00,2026-05-13,btc_ret_21_positive,0.037525246466038054,0.0,>,True,True,PASS,BTC 21-day return must be positive when required.
+2026-05-13T04:13:53.425296+00:00,2026-05-13,confirmation_days,0.0,2.0,>=,True,False,FAIL,Raw gate must pass for 2 consecutive day(s).
+2026-05-13T04:13:53.425296+00:00,2026-05-13,final_v26_gate,0.0,1.0,==,True,False,FAIL,Final V26 risk gate after all checks and confirmation-day logic.
