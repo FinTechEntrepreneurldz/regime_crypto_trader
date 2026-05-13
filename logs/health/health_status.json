@@ -5,10 +5,10 @@
     "V26 risk-on gate is false; strategy target is flat.",
     "Failed V26 gate checks: btc_above_200, confirmation_days, final_v26_gate"
   ],
-  "computed_at": "2026-05-13T04:13:53.425296+00:00",
+  "computed_at": "2026-05-13T11:28:48.340692+00:00",
   "gate_diagnostics": {
     "active": false,
-    "computed_at": "2026-05-13T04:13:53.425296+00:00",
+    "computed_at": "2026-05-13T11:28:48.340692+00:00",
     "confirmation_days_pass": false,
     "confirmation_days_passed_count": 0,
     "confirmation_days_required": 2,
@@ -23,8 +23,8 @@
       "breadth_50": 0.9166666666666666,
       "btc_above_200": 0.0,
       "btc_above_50": 1.0,
-      "btc_dd_63": -0.01260728204622874,
-      "btc_ret_21": 0.037525246466038054,
+      "btc_dd_63": -0.020013510052854122,
+      "btc_ret_21": 0.02974298475979209,
       "eth_above_50": 1.0,
       "risk_on_score": 0.7591666666666667
     },
