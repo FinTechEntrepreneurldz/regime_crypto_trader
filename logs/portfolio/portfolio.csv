@@ -9,3 +9,4 @@ timestamp_utc,portfolio_value,action,submit_orders
 2026-05-14T03:52:10.182402+00:00,1000000.0,risk_gate_off_flat,True
 2026-05-14T04:13:58.041607+00:00,1000000.0,risk_gate_off_flat,True
 2026-05-14T17:09:01.648948+00:00,1000000.0,risk_gate_off_flat,True
+2026-05-14T20:28:58.406268+00:00,1000000.0,risk_gate_off_flat,False
