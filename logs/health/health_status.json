@@ -5,10 +5,10 @@
     "V26 risk-on gate is false; strategy target is flat.",
     "Failed V26 gate checks: risk_on_score, breadth_50, btc_above_200, eth_above_50, btc_ret_21_positive, confirmation_days, final_v26_gate"
   ],
-  "computed_at": "2026-05-18T04:43:04.440847+00:00",
+  "computed_at": "2026-05-18T19:53:18.627891+00:00",
   "gate_diagnostics": {
     "active": false,
-    "computed_at": "2026-05-18T04:43:04.440847+00:00",
+    "computed_at": "2026-05-18T19:53:18.627891+00:00",
     "confirmation_days_pass": false,
     "confirmation_days_passed_count": 0,
     "confirmation_days_required": 2,
@@ -24,13 +24,13 @@
     "market_date": "2026-05-18",
     "raw_gate_today": false,
     "regime_snapshot": {
-      "breadth_50": 0.4166666666666667,
+      "breadth_50": 0.3333333333333333,
       "btc_above_200": 0.0,
       "btc_above_50": 1.0,
-      "btc_dd_63": -0.06394702794044382,
-      "btc_ret_21": -0.005451821524985023,
+      "btc_dd_63": -0.06415860230260939,
+      "btc_ret_21": -0.005676617452976984,
       "eth_above_50": 0.0,
-      "risk_on_score": 0.32416666666666666
+      "risk_on_score": 0.30333333333333334
     },
     "summary": "V26 gate is OFF. Failed checks: risk_on_score, breadth_50, btc_above_200, eth_above_50, btc_ret_21_positive, confirmation_days, final_v26_gate."
   },
@@ -41,6 +41,6 @@
   "n_orders_submitted": 0,
   "n_target_positions": 0,
   "overall_status": "ok",
-  "risk_on_score": 0.32416666666666666,
+  "risk_on_score": 0.30333333333333334,
   "training_recommended": false
 }
