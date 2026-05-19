@@ -16,3 +16,4 @@ market_date,variant,action,action_idx,last_action,submit_orders,account_status,a
 2026-05-17,Regime Crypto Trader — V26 Long-Only,risk_gate_off_flat,0,risk_gate_off_flat,True,connected,1000000.0,0,0,0,model_artifacts/selected_strategy.json,model_artifacts/metadata.json,2026-05-17T04:33:29.006609+00:00
 2026-05-18,Regime Crypto Trader — V26 Long-Only,risk_gate_off_flat,0,risk_gate_off_flat,True,connected,1000000.0,0,0,0,model_artifacts/selected_strategy.json,model_artifacts/metadata.json,2026-05-18T04:43:04.440847+00:00
 2026-05-18,Regime Crypto Trader — V26 Long-Only,risk_gate_off_flat,0,risk_gate_off_flat,True,connected,1000000.0,0,0,0,model_artifacts/selected_strategy.json,model_artifacts/metadata.json,2026-05-18T19:53:18.627891+00:00
+2026-05-19,Regime Crypto Trader — V26 Long-Only,risk_gate_off_flat,0,risk_gate_off_flat,True,connected,1000000.0,0,0,0,model_artifacts/selected_strategy.json,model_artifacts/metadata.json,2026-05-19T04:34:35.433399+00:00
