@@ -1,6 +1,6 @@
 {
   "active": false,
-  "computed_at": "2026-05-19T04:34:35.433399+00:00",
+  "computed_at": "2026-05-19T12:08:03.902214+00:00",
   "confirmation_days_pass": false,
   "confirmation_days_passed_count": 0,
   "confirmation_days_required": 2,
@@ -18,8 +18,8 @@
     "breadth_50": 0.3333333333333333,
     "btc_above_200": 0.0,
     "btc_above_50": 1.0,
-    "btc_dd_63": -0.06636805860966288,
-    "btc_ret_21": 0.005536306754360565,
+    "btc_dd_63": -0.06695913102561435,
+    "btc_ret_21": 0.004899712452247185,
     "eth_above_50": 0.0,
     "risk_on_score": 0.43333333333333335
   },
